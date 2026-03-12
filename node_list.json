@@ -1,0 +1,14 @@
+{
+  "name": "ComfyUI-JunsAirgapGuard",
+  "author": "wakaya",
+  "description": "Airgap safety node for ComfyUI. Checks if a URL is reachable and optionally blocks execution.",
+  "repository": "https://github.com/wakaya/ComfyUI-JunsAirgapGuard",
+  "tags": [
+    "security",
+    "network",
+    "utility"
+  ],
+  "nodes": [
+    "JunsAirgapGuard"
+  ]
+}
