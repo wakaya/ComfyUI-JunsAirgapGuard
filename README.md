@@ -1,7 +1,7 @@
 # 🛡️ Jun's Airgap Guard
 
-![Version](https://img.shields.io/github/v/release/wakaya/JunsAirgapGuard)
-![License](https://img.shields.io/github/license/wakaya/JunsAirgapGuard)
+![Version](https://img.shields.io/github/v/release/wakaya/ComfyUI-JunsAirgapGuard)
+![License](https://img.shields.io/github/license/wakaya/ComfyUI-JunsAirgapGuard)
 ![ComfyUI Custom Node](https://img.shields.io/badge/ComfyUI-Custom%20Node-8A2BE2)
 
 A lightweight custom node for ComfyUI that checks whether a specified URL is reachable and optionally blocks workflow execution.
