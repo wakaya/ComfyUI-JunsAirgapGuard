@@ -1,0 +1,7 @@
+{
+  "status_idle": "Idle",
+  "status_checking": "Checking...",
+  "status_reachable": "Reachable",
+  "status_unreachable": "Unreachable",
+  "status_invalid": "Invalid URL"
+}

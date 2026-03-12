@@ -1,0 +1,29 @@
+{
+  "JunsAirgapGuard": {
+    "display_name": "🛡️ Jun's Airgap Guard",
+    "description": "指定したURLへの到達性を確認し、条件に応じて実行を停止します。",
+    "inputs": {
+      "url": {
+        "name": "対象URL",
+        "tooltip": "確認対象のURLです。http:// または https:// のみ使用できます。"
+      },
+      "timeout_seconds": {
+        "name": "タイムアウト秒数",
+        "tooltip": "接続確認に使うタイムアウト秒数です。"
+      },
+      "mode": {
+        "name": "動作モード",
+        "tooltip": "オンラインで停止、オフラインで停止、停止しないから選びます。",
+        "options": {
+          "block_if_reachable": "オンラインなら停止",
+          "block_if_unreachable": "オフラインなら停止",
+          "report_only": "停止しない"
+        }
+      },
+      "probe_token": {
+        "name": "プローブトークン",
+        "tooltip": "毎回再確認したい場合に、実行ごとに変化する整数を入れます。"
+      }
+    }
+  }
+}

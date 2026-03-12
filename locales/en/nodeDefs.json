@@ -1,0 +1,29 @@
+{
+  "JunsAirgapGuard": {
+    "display_name": "🛡️ Jun's Airgap Guard",
+    "description": "Checks whether a specified URL is reachable and optionally blocks execution.",
+    "inputs": {
+      "url": {
+        "name": "Target URL",
+        "tooltip": "Target URL to test. Only http:// and https:// are allowed."
+      },
+      "timeout_seconds": {
+        "name": "Timeout Seconds",
+        "tooltip": "Timeout in seconds for the connectivity check."
+      },
+      "mode": {
+        "name": "Mode",
+        "tooltip": "Choose whether to stop when the target is reachable, unreachable, or never stop.",
+        "options": {
+          "block_if_reachable": "Block if Reachable",
+          "block_if_unreachable": "Block if Unreachable",
+          "report_only": "Report Only"
+        }
+      },
+      "probe_token": {
+        "name": "Probe Token",
+        "tooltip": "Change this value each run to force re-checking."
+      }
+    }
+  }
+}
