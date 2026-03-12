@@ -31,12 +31,26 @@ class JunsAirgapGuard:
             "invalid_host": "URL のホスト名が不正です。",
             "invalid_url": "URL 不正: {reason}",
             "checking": "確認中...",
-            "reachable_http": "到達可 (HTTP {status})",
-            "unreachable_reason": "到達不可 ({reason})",
-            "unreachable_exception": "到達不可 ({etype}: {message})",
-            "blocked_reachable": "Jun's Airgap Guard: 指定先に到達できたため停止しました。 {message}",
-            "blocked_unreachable": "Jun's Airgap Guard: 指定先に到達できなかったため停止しました。 {message}",
+            "reachable_http": "つながった (HTTP {status})",
+            "unreachable_reason": "つながらなかった ({reason})",
+            "unreachable_exception": "つながらなかった ({etype}: {message})",
+            "blocked_reachable": "Jun's Airgap Guard: 指定先につながったので停止しました。 {message}",
+            "blocked_unreachable": "Jun's Airgap Guard: 指定先につながらなかったので停止しました。 {message}",
         },
+    }
+
+    MODE_ALIASES = {
+        "block_if_reachable": "block_if_reachable",
+        "block_if_unreachable": "block_if_unreachable",
+        "report_only": "report_only",
+
+        "Block if reachable": "block_if_reachable",
+        "Block if unreachable": "block_if_unreachable",
+        "Report only": "report_only",
+
+        "オンラインなら停止": "block_if_reachable",
+        "オフラインなら停止": "block_if_unreachable",
+        "停止しない": "report_only",
     }
 
     @classmethod
@@ -119,6 +133,11 @@ class JunsAirgapGuard:
         text = table.get(key, self.I18N["en"].get(key, key))
         return text.format(**kwargs)
 
+    def _normalize_mode(self, mode):
+        if mode is None:
+            return "block_if_reachable"
+        return self.MODE_ALIASES.get(str(mode).strip(), "block_if_reachable")
+
     def _send_status(self, unique_id, state, reachable, message, http_status=None):
         if unique_id is None:
             return
@@ -175,6 +194,7 @@ class JunsAirgapGuard:
     def check(self, url, timeout_seconds, mode, probe_token, unique_id=None):
         lang = self._detect_lang()
         url = url.strip()
+        mode = self._normalize_mode(mode)
 
         try:
             self._validate_url(url, lang)

@@ -1,7 +1,7 @@
 {
   "status_idle": "未確認",
   "status_checking": "確認中...",
-  "status_reachable": "到達可",
-  "status_unreachable": "到達不可",
-  "status_invalid": "URL不正"
+  "status_reachable": "オンライン",
+  "status_unreachable": "オフライン",
+  "status_invalid": "URLが正しくない"
 }

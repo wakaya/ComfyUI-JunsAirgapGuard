@@ -13,7 +13,7 @@
       },
       "mode": {
         "name": "動作モード",
-        "tooltip": "オンラインで停止、オフラインで停止、停止しないから選びます。",
+        "tooltip": "オンラインなら停止、オフラインなら停止、停止しないから選びます。",
         "options": {
           "block_if_reachable": "オンラインなら停止",
           "block_if_unreachable": "オフラインなら停止",

@@ -3,6 +3,7 @@
 ![Version](https://img.shields.io/github/v/release/wakaya/ComfyUI-JunsAirgapGuard?sort=semver)
 ![License](https://img.shields.io/github/license/wakaya/ComfyUI-JunsAirgapGuard)
 ![ComfyUI Custom Node](https://img.shields.io/badge/ComfyUI-Custom%20Node-8A2BE2)
+![GitHub stars](https://img.shields.io/github/stars/wakaya/ComfyUI-JunsAirgapGuard?style=social)
 
 A lightweight custom node for ComfyUI that checks whether a specified URL is reachable and optionally blocks workflow execution.
 
@@ -60,7 +61,7 @@ Clone this repository into your `ComfyUI/custom_nodes` directory.
 
 ```bash
 cd ComfyUI/custom_nodes
-git clone https://github.com/YOUR_NAME/JunsAirgapGuard.git
+git clone https://github.com/wakaya/JunsAirgapGuard.git
 
 Then restart ComfyUI and reload the browser.
 
