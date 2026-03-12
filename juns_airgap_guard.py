@@ -1,6 +1,8 @@
 from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 from urllib.error import URLError, HTTPError
+import locale
+import os
 
 from server import PromptServer
 
@@ -11,6 +13,31 @@ class JunsAirgapGuard:
     RETURN_TYPES = ()
     OUTPUT_NODE = True
     DESCRIPTION = "Checks whether a specified URL is reachable and optionally blocks execution."
+
+    I18N = {
+        "en": {
+            "invalid_url_prefix": "URL must start with http:// or https://",
+            "invalid_host": "Host name is invalid",
+            "invalid_url": "Invalid URL: {reason}",
+            "checking": "Checking...",
+            "reachable_http": "Reachable (HTTP {status})",
+            "unreachable_reason": "Unreachable ({reason})",
+            "unreachable_exception": "Unreachable ({etype}: {message})",
+            "blocked_reachable": "Jun's Airgap Guard: blocked because the target was reachable. {message}",
+            "blocked_unreachable": "Jun's Airgap Guard: blocked because the target was unreachable. {message}",
+        },
+        "ja": {
+            "invalid_url_prefix": "URL は http:// または https:// で始めてください。",
+            "invalid_host": "URL のホスト名が不正です。",
+            "invalid_url": "URL 不正: {reason}",
+            "checking": "確認中...",
+            "reachable_http": "到達可 (HTTP {status})",
+            "unreachable_reason": "到達不可 ({reason})",
+            "unreachable_exception": "到達不可 ({etype}: {message})",
+            "blocked_reachable": "Jun's Airgap Guard: 指定先に到達できたため停止しました。 {message}",
+            "blocked_unreachable": "Jun's Airgap Guard: 指定先に到達できなかったため停止しました。 {message}",
+        },
+    }
 
     @classmethod
     def INPUT_TYPES(cls):
@@ -65,6 +92,33 @@ class JunsAirgapGuard:
     def IS_CHANGED(cls, url, timeout_seconds, mode, probe_token, unique_id=None):
         return f"{url}|{timeout_seconds}|{mode}|{probe_token}"
 
+    def _detect_lang(self):
+        candidates = []
+
+        try:
+            loc = locale.getlocale()
+            if loc and loc[0]:
+                candidates.append(loc[0])
+        except Exception:
+            pass
+
+        for key in ("LC_ALL", "LC_MESSAGES", "LANG", "LANGUAGE"):
+            value = os.environ.get(key)
+            if value:
+                candidates.append(value)
+
+        for value in candidates:
+            lower = str(value).lower()
+            if lower.startswith("ja"):
+                return "ja"
+
+        return "en"
+
+    def _t(self, lang, key, **kwargs):
+        table = self.I18N.get(lang, self.I18N["en"])
+        text = table.get(key, self.I18N["en"].get(key, key))
+        return text.format(**kwargs)
+
     def _send_status(self, unique_id, state, reachable, message, http_status=None):
         if unique_id is None:
             return
@@ -82,14 +136,14 @@ class JunsAirgapGuard:
         except Exception:
             pass
 
-    def _validate_url(self, url: str):
+    def _validate_url(self, url: str, lang: str):
         parsed = urlparse(url.strip())
         if parsed.scheme not in ("http", "https"):
-            raise ValueError("URL must start with http:// or https://")
+            raise ValueError(self._t(lang, "invalid_url_prefix"))
         if not parsed.netloc:
-            raise ValueError("Host name is invalid")
+            raise ValueError(self._t(lang, "invalid_host"))
 
-    def _probe(self, url: str, timeout_seconds: int):
+    def _probe(self, url: str, timeout_seconds: int, lang: str):
         req = Request(
             url,
             method="HEAD",
@@ -101,43 +155,45 @@ class JunsAirgapGuard:
         try:
             with urlopen(req, timeout=timeout_seconds) as resp:
                 status = getattr(resp, "status", 200)
-                return True, f"Reachable (HTTP {status})", status
+                return True, self._t(lang, "reachable_http", status=status), status
 
         except HTTPError as e:
-            return True, f"Reachable (HTTP {e.code})", e.code
+            return True, self._t(lang, "reachable_http", status=e.code), e.code
 
         except URLError as e:
             reason = getattr(e, "reason", e)
-            return False, f"Unreachable ({reason})", None
+            return False, self._t(lang, "unreachable_reason", reason=reason), None
 
         except Exception as e:
-            return False, f"Unreachable ({type(e).__name__}: {e})", None
+            return False, self._t(
+                lang,
+                "unreachable_exception",
+                etype=type(e).__name__,
+                message=e,
+            ), None
 
     def check(self, url, timeout_seconds, mode, probe_token, unique_id=None):
+        lang = self._detect_lang()
         url = url.strip()
 
         try:
-            self._validate_url(url)
+            self._validate_url(url, lang)
         except Exception as e:
-            msg = f"Invalid URL: {e}"
+            msg = self._t(lang, "invalid_url", reason=e)
             self._send_status(unique_id, "invalid", None, msg, None)
             raise RuntimeError(f"Jun's Airgap Guard: {msg}")
 
-        self._send_status(unique_id, "checking", None, "Checking...", None)
+        self._send_status(unique_id, "checking", None, self._t(lang, "checking"), None)
 
-        reachable, message, http_status = self._probe(url, timeout_seconds)
+        reachable, message, http_status = self._probe(url, timeout_seconds, lang)
         state = "reachable" if reachable else "unreachable"
         self._send_status(unique_id, state, reachable, message, http_status)
 
         if mode == "block_if_reachable" and reachable:
-            raise RuntimeError(
-                f"Jun's Airgap Guard: blocked because the target was reachable. {message}"
-            )
+            raise RuntimeError(self._t(lang, "blocked_reachable", message=message))
 
         if mode == "block_if_unreachable" and not reachable:
-            raise RuntimeError(
-                f"Jun's Airgap Guard: blocked because the target was unreachable. {message}"
-            )
+            raise RuntimeError(self._t(lang, "blocked_unreachable", message=message))
 
         return ()
 
