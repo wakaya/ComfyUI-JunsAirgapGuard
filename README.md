@@ -1,6 +1,6 @@
 # 🛡️ Jun's Airgap Guard
 
-![Version](https://img.shields.io/github/v/release/wakaya/ComfyUI-JunsAirgapGuard)
+![Version](https://img.shields.io/github/v/release/wakaya/ComfyUI-JunsAirgapGuard?sort=semver)
 ![License](https://img.shields.io/github/license/wakaya/ComfyUI-JunsAirgapGuard)
 ![ComfyUI Custom Node](https://img.shields.io/badge/ComfyUI-Custom%20Node-8A2BE2)
 
